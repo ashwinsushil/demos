@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: osrf/ros:jazzy-desktop-full
+    runs-on: ubunut-latest
 
     steps:
     - name: Updates packages
