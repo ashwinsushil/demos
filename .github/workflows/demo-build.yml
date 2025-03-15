@@ -1,0 +1,28 @@
+name: Nightly Demo Build
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: osrf/ros:jazzy-desktop-full
+
+    steps:
+    - name: Updates packages
+      run: |
+        sudo apt update
+    - name: Setup Workspace
+      run: |
+        source /opt/ros/jazzy/install/setup.bash
+        mkdir -p ros2_ws/src
+        cd ros2_ws
+    - uses: actions/checkout@v4
+      with:
+        path: ros2_ws/src
+    - name: Start build
+      run: |
+        colcon build
