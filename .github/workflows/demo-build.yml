@@ -1,28 +1,31 @@
-name: Nightly Demo Build
+name: ROS2 CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "master" ]
+    branches:
+      - main
 
 jobs:
-  build:
-
-    runs-on: ubunut-latest
+  build-and-test:
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Updates packages
-      run: |
-        sudo apt update
-    - name: Setup Workspace
-      run: |
-        source /opt/ros/jazzy/install/setup.bash
-        mkdir -p ros2_ws/src
-        cd ros2_ws
-    - uses: actions/checkout@v4
-      with:
-        path: ros2_ws/src
-    - name: Start build
-      run: |
-        colcon build
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up ROS2
+        uses: ros-tooling/setup-ros@v0.2
+        with:
+          required-ros-distributions: jazzy
+
+      - name: Install dependencies
+        run: sudo apt-get update && rosdep install --from-paths src --ignore-src -r -y
+
+      - name: Build the workspace
+        run: colcon build
+
+      - name: Run tests
+        run: colcon test && colcon test-result --verbose
